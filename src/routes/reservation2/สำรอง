@@ -5,7 +5,6 @@ import { route } from '$lib/ROUTES';
 import { get_personinfo, count_seat, getFareInfo } from '$lib/utils_reserve.js';
 import Database from 'better-sqlite3';
 import path from 'path';
-import { goto } from '$app/navigation';
 
 const dbPath = path.resolve('src/lib/databaseStorage/dbforTrain-2.db');
 const db = new Database(dbPath);

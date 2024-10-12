@@ -42,7 +42,6 @@ export function generateChangeLink(trip) {
     return `/change?trip_route=${route}&from_station_name=${fromStation}&to_station_name=${toStation}&date=${date}&trip_id=${trip_id}&seat_type=${seat_type}`;
 }
 
-// $lib/utils.js
 export function generateSQLQuery(fromStation, toStation, selectedDate) {
     let fromStationNum = parseInt(fromStation.slice(-2));
     let toStationNum = parseInt(toStation.slice(-2));

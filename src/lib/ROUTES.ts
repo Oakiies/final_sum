@@ -14,10 +14,11 @@ const PAGES = {
   "/auth/register": `/auth/register`,
   "/dashboard": `/dashboard`,
   "/list_ticket": `/list_ticket`,
-  "/payment/mastercard": `/payment/mastercard`,
-  "/payment/promptpay": `/payment/promptpay`,
+  "/payment": `/payment`,
   "/reservation": `/reservation`,
-  "/search": `/search`
+  "/reservation2": `/reservation2`,
+  "/search": `/search`,
+  "/ticket": `/ticket`
 }
 
 /**
@@ -36,7 +37,7 @@ const ACTIONS = {
   "registerUser /auth/register": `/auth/register?/registerUser`,
   "default /dashboard": `/dashboard`,
   "default /logout": `/logout`,
-  "simulatePayment /payment/promptpay": `/payment/promptpay?/simulatePayment`
+  "simulatePayment /payment": `/payment?/simulatePayment`
 }
 
 /**
@@ -143,9 +144,9 @@ export function route<T extends keyof AllTypes>(key: T, ...params: any[]): strin
 * ```
 */
 export type KIT_ROUTES = {
-  PAGES: { '/': never, '/auth/login': never, '/auth/register': never, '/dashboard': never, '/list_ticket': never, '/payment/mastercard': never, '/payment/promptpay': never, '/reservation': never, '/search': never }
+  PAGES: { '/': never, '/auth/login': never, '/auth/register': never, '/dashboard': never, '/list_ticket': never, '/payment': never, '/reservation': never, '/reservation2': never, '/search': never, '/ticket': never }
   SERVERS: Record<string, never>
-  ACTIONS: { 'default /auth/login': never, 'deleteAllUsers /auth/register': never, 'registerUser /auth/register': never, 'default /dashboard': never, 'default /logout': never, 'simulatePayment /payment/promptpay': never }
+  ACTIONS: { 'default /auth/login': never, 'deleteAllUsers /auth/register': never, 'registerUser /auth/register': never, 'default /dashboard': never, 'default /logout': never, 'simulatePayment /payment': never }
   LINKS: Record<string, never>
   Params: Record<string, never>
 }

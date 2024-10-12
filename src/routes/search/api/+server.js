@@ -6,7 +6,7 @@ import { generateSQLQuery } from '$lib/utils.js';
 export async function POST({ request }) {
   const { line, origin, destination, date } = await request.json();
 
-  const dbPath = path.resolve('/Users/oakky/Documents/real_final/src/lib/databaseStorage/dbforTrain-2.db');
+  const dbPath = path.resolve('src/lib/databaseStorage/dbforTrain-2.db');
   const db = new Database(dbPath);
 
   try {

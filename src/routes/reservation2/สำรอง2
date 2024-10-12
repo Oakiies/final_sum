@@ -1,21 +1,10 @@
 <script>
     import { onMount } from "svelte";
-    import { redirect } from '@sveltejs/kit';
     let selectedSeatType = "";
     let selectedQuantity = 1;
     export let data;
-    $: ({ loggedOnUserName, tripData, userInfo, availableSeats, travelTimeMinutes } = data || {});
+    $: ({ loggedOnUserName, tripData, userInfo, availableSeats } = data || {});
     
-    // เพิ่มการคำนวณเวลาถึงปลายทาง
-    $: arrivalTime = calculateArrivalTime(tripData?.fromDatetime, travelTimeMinutes);
-
-    function calculateArrivalTime(fromDatetime, travelTimeMinutes) {
-        if (!fromDatetime || !travelTimeMinutes) return '';
-        const departureTime = new Date(fromDatetime);
-        const arrivalTime = new Date(departureTime.getTime() + travelTimeMinutes * 60000);
-        return arrivalTime.toLocaleTimeString('th-TH', {hour: '2-digit', minute:'2-digit'});
-    }
-
     function translateSeatType(seatType) {
         const translations = {
             'seat1_room': 'ชั้น 1 ห้องส่วนตัว',
@@ -37,6 +26,11 @@
         ? availableSeats.find(seat => seat.seat_type === selectedSeatType)?.farePerSeat * selectedQuantity || 0
         : 0;
 
+    $: {
+        console.log('Data received:', data);
+        console.log('Available Seats:', availableSeats);
+    }
+
     function incrementQuantity() {
         if (selectedQuantity < 4) selectedQuantity++;
     }
@@ -46,50 +40,35 @@
     }
 
     async function confirmBooking() {
-    console.log("เริ่มฟังก์ชัน confirmBooking");
-    const bookingData = {
-        userId: userInfo.passenger_id,
-        tripId: tripData.tripId,
-        seatType: selectedSeatType,
-        quantity: selectedQuantity,
-        totalPrice: totalPrice,
-        fromStation: tripData.user_from_station,
-        toStation: tripData.user_to_station
-    };
-    console.log("ข้อมูลการจองที่จะส่ง:", bookingData);
-    try {
-        const response = await fetch('/reservation/api', {
+        console.log("Booking confirmed:", {
+            ...tripData,
+            ...userInfo,
+            seatType: selectedSeatType,
+            quantity: selectedQuantity,
+            totalPrice
+        });
+        
+        const response = await fetch('/reservation', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'
             },
-            body: JSON.stringify(bookingData)
+            body: JSON.stringify({
+                ...tripData,
+                ...userInfo,
+                seatType: selectedSeatType,
+                quantity: selectedQuantity,
+                totalPrice
+            })
         });
-        console.log("สถานะการตอบกลับจากเซิร์ฟเวอร์:", response.status);
-        const responseData = await response.json();
+
         if (response.ok) {
-            console.log("การจองเสร็จสมบูรณ์ การตอบกลับจากเซิร์ฟเวอร์:", responseData);
-            
-            sessionStorage.setItem('paymentId', responseData.paymentId.toString());
-            sessionStorage.setItem('totalPrice', bookingData.totalPrice.toString());
-            console.log("บันทึกข้อมูลใน sessionStorage เรียบร้อย");
-            
-            alert(`การจองเสร็จสมบูรณ์!
-                รหัสการชำระเงิน: ${responseData.paymentId}
-                จำนวนเงิน: ${bookingData.totalPrice} บาท
-                สถานะ: รอการชำระเงิน`);
-                setTimeout(() => {
-                    window.location.href = '/payment';
-                }, 100);
-            } else {
-            console.error("ข้อผิดพลาดจากเซิร์ฟเวอร์:", responseData);
-            alert('เกิดข้อผิดพลาดในการบันทึกการจอง: ' + responseData.message);
+            alert('การจองเสร็จสมบูรณ์!');
+            // You might want to redirect to another page after this
+        } else {
+            alert('เกิดข้อผิดพลาดในการจอง กรุณาลองใหม่อีกครั้ง');
         }
-    } catch (error) {
-        console.error("เกิดข้อผิดพลาดใน confirmBooking:", error);
-        alert('เกิดข้อผิดพลาดในการเชื่อมต่อกับเซิร์ฟเวอร์ กรุณาลองใหม่อีกครั้ง');
     }
-}
 </script>
 
 <div class="p-8">
@@ -187,7 +166,7 @@
                 <p>จาก: {tripData.user_from_station} ถึง {tripData.user_to_station}</p>
                 <p>วันที่เดินทาง: {new Date(tripData.fromDatetime).toLocaleDateString('th-TH')}</p>
                 <p>เวลา: {new Date(tripData.fromDatetime).toLocaleTimeString('th-TH', {hour: '2-digit', minute:'2-digit'})} - 
-                   {arrivalTime}</p>
+                   {new Date(tripData.toDatetime).toLocaleTimeString('th-TH', {hour: '2-digit', minute:'2-digit'})}</p>
                 <p>ชั้นโดยสาร: {selectedSeatType ? translateSeatType(selectedSeatType) : '-'}</p>
                 <p>จำนวน: {selectedQuantity}</p>
                 <p>ราคาต่อที่นั่ง: {selectedSeatType ? availableSeats.find(seat => seat.seat_type === selectedSeatType)?.farePerSeat.toFixed(2) : '-'} บาท</p>

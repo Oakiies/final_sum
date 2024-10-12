@@ -6,20 +6,22 @@ export function get_personinfo(userID) {
     console.log(`SQL Query: ${sqlQuery}`);
     return { query: sqlQuery, params: [userID] };
   }
-  
   export function count_seat(tripID) {
     const sqlQuery = `
-      SELECT seat_type, count(seat_id) as available_seats
-      FROM SEAT
-      JOIN PAX_COACHES USING (coach_id)
-      JOIN TRAINS USING (train_id)
-      WHERE seat_id NOT IN (SELECT reserved_seat_id FROM RESERVATIONS)
-      AND trip_id = ?
-      GROUP BY seat_type
-    `;
+    SELECT trip_id, seat_type, COUNT(seat_id) as available_seats
+    FROM SEAT
+    JOIN PAX_COACHES
+    USING (coach_id)
+    JOIN TRAINS
+    USING (train_id)
+    WHERE seat_id NOT IN (SELECT reserved_seat_id 
+                          FROM RESERVATIONS)
+    AND trip_id = ?
+    GROUP BY trip_id, seat_type`;
     console.log(`SQL Query: ${sqlQuery}`);
+    console.log(`Trip ID: ${tripID}`);
     return { query: sqlQuery, params: [tripID] };
-  }
+}
   
   export function getFareInfo(tripID) {
     const sqlQuery = `

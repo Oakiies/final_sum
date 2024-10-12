@@ -1,6 +1,5 @@
 <script>
     import { onMount } from "svelte";
-    import { redirect } from '@sveltejs/kit';
     let selectedSeatType = "";
     let selectedQuantity = 1;
     export let data;
@@ -46,50 +45,50 @@
     }
 
     async function confirmBooking() {
-    console.log("เริ่มฟังก์ชัน confirmBooking");
-    const bookingData = {
-        userId: userInfo.passenger_id,
-        tripId: tripData.tripId,
-        seatType: selectedSeatType,
-        quantity: selectedQuantity,
-        totalPrice: totalPrice,
-        fromStation: tripData.user_from_station,
-        toStation: tripData.user_to_station
-    };
-    console.log("ข้อมูลการจองที่จะส่ง:", bookingData);
-    try {
-        const response = await fetch('/reservation/api', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify(bookingData)
-        });
-        console.log("สถานะการตอบกลับจากเซิร์ฟเวอร์:", response.status);
-        const responseData = await response.json();
-        if (response.ok) {
-            console.log("การจองเสร็จสมบูรณ์ การตอบกลับจากเซิร์ฟเวอร์:", responseData);
-            
-            sessionStorage.setItem('paymentId', responseData.paymentId.toString());
-            sessionStorage.setItem('totalPrice', bookingData.totalPrice.toString());
-            console.log("บันทึกข้อมูลใน sessionStorage เรียบร้อย");
-            
-            alert(`การจองเสร็จสมบูรณ์!
+        console.log("เริ่มฟังก์ชัน confirmBooking");
+
+        // สร้าง object ที่จะส่งไป
+        const bookingData = {
+            userId: userInfo.passenger_id,
+            tripId: tripData.tripId,
+            seatType: selectedSeatType,
+            quantity: selectedQuantity,
+            totalPrice: totalPrice,
+            fromStationId: tripData.user_from_station,
+            toStationId: tripData.user_to_station
+        };
+
+        console.log("ข้อมูลการจองที่จะส่ง:", bookingData);
+
+        try {
+            const response = await fetch('/reservation/api', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(bookingData)
+            });
+
+            console.log("สถานะการตอบกลับจากเซิร์ฟเวอร์:", response.status);
+
+            const responseData = await response.json();
+
+            if (response.ok) {
+                console.log("การจองเสร็จสมบูรณ์ การตอบกลับจากเซิร์ฟเวอร์:", responseData);
+                alert(`การจองเสร็จสมบูรณ์!
                 รหัสการชำระเงิน: ${responseData.paymentId}
                 จำนวนเงิน: ${bookingData.totalPrice} บาท
                 สถานะ: รอการชำระเงิน`);
-                setTimeout(() => {
-                    window.location.href = '/payment';
-                }, 100);
+                // อาจจะ redirect ไปหน้าแสดงรายละเอียดการจองหรือหน้าประวัติการจอง
             } else {
-            console.error("ข้อผิดพลาดจากเซิร์ฟเวอร์:", responseData);
-            alert('เกิดข้อผิดพลาดในการบันทึกการจอง: ' + responseData.message);
+                console.error("ข้อผิดพลาดจากเซิร์ฟเวอร์:", responseData);
+                alert('เกิดข้อผิดพลาดในการบันทึกการจอง: ' + responseData.message);
+            }
+        } catch (error) {
+            console.error("เกิดข้อผิดพลาดใน confirmBooking:", error);
+            alert('เกิดข้อผิดพลาดในการเชื่อมต่อกับเซิร์ฟเวอร์ กรุณาลองใหม่อีกครั้ง');
         }
-    } catch (error) {
-        console.error("เกิดข้อผิดพลาดใน confirmBooking:", error);
-        alert('เกิดข้อผิดพลาดในการเชื่อมต่อกับเซิร์ฟเวอร์ กรุณาลองใหม่อีกครั้ง');
     }
-}
 </script>
 
 <div class="p-8">

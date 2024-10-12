@@ -13,25 +13,6 @@ export const POST = async ({ request }) => {
         // Start a transaction
         db.prepare('BEGIN').run();
 
-        // Convert fromStation and toStation to station_id
-        const getStationId = db.prepare(`
-            SELECT station_id 
-            FROM STATIONS 
-            WHERE station_name = ?
-        `);
-
-        const fromStationIDResult = getStationId.get(fromStation);
-        const toStationIDResult = getStationId.get(toStation);
-
-        if (!fromStationIDResult || !toStationIDResult) {
-            throw new Error('Invalid station names provided.');
-        }
-
-        const fromStationID = fromStationIDResult.station_id;
-        const toStationID = toStationIDResult.station_id;
-
-        console.log(`From Station ID: ${fromStationID}, To Station ID: ${toStationID}`);
-
         // Find available seats
         const findSeats = db.prepare(`
             SELECT seat_id
@@ -88,13 +69,13 @@ export const POST = async ({ request }) => {
 
         // Insert reservations
         for (const seat of availableSeats) {
-            console.log('Inserting reservation:', seat.seat_id, userId, tripId, fromStationID, toStationID, bookingDatetime, 'wait', newPaymentId);
+            console.log('Inserting reservation:', seat.seat_id, userId, tripId, fromStation, toStation, bookingDatetime, 'wait', newPaymentId);
             reservationInsert.run(
                 seat.seat_id,
                 userId,
                 tripId,
-                fromStationID,
-                toStationID,
+                'st_ne_06',
+                'toStationId',
                 bookingDatetime,
                 'wait',
                 newPaymentId

@@ -10,18 +10,26 @@ export const load = loadFlash(async ({ url, cookies }) => {
   // ดึง session จาก cookies (ซึ่งควรเก็บ passenger_id ไว้)
   const session = cookies.get(SESSION_COOKIE_NAME);
 
-  const passenger_id = session; 
+  // ตรวจสอบว่ามี session หรือไม่
+  if (!session) {
+    throw redirect(303, '/auth/login'); // ถ้าไม่มี session ให้ redirect ไปที่หน้าล็อกอิน
+  }
 
-  const dbPath = path.resolve('/Users/oakky/Documents/star_rail/list/src/dbforTrain.db');
+  const passenger_id = session; 
+  const dbPath = path.resolve('src/lib/databaseStorage/dbforTrain-2.db');
+
+  let db;
   let result;
-  let show_trip;
 
   try {
-    const db = new Database(dbPath);
+    // สร้างการเชื่อมต่อกับฐานข้อมูล
+    db = new Database(dbPath);
+    
+    // ทำการ query ข้อมูล
     result = db
       .prepare(`
         SELECT
-          r.reserved_seat_id, reserve_status, r.trip_id, r.passenger_id, r.booking_datetime,
+          r.reserved_seat_id, reserve_status, r.reserve_trip_id, r.passenger_id, r.booking_datetime,
           r.from_station_id, r.to_station_id, r.payment_id,
           s.seat_id, s.seat_type,
           st.price,
@@ -29,7 +37,7 @@ export const load = loadFlash(async ({ url, cookies }) => {
           sta_to.station_name AS to_station_name,
           t.from_datetime, t.route
         FROM RESERVATIONS r
-        JOIN TRIPS t ON r.trip_id = t.trip_id
+        JOIN TRIPS t ON r.reserve_trip_id = t.trip_id
         JOIN STATIONS sta_from ON sta_from.station_id = r.from_station_id
         JOIN STATIONS sta_to ON sta_to.station_id = r.to_station_id
         JOIN SEAT s ON s.seat_id = r.reserved_seat_id
@@ -37,11 +45,15 @@ export const load = loadFlash(async ({ url, cookies }) => {
         WHERE r.passenger_id = ?
       `)
       .all(passenger_id);
-	
-    db.close(); // ปิดการเชื่อมต่อฐานข้อมูล
+    
   } catch (error) {
     console.error('Database query failed:', error);
     throw error;
+  } finally {
+    // ตรวจสอบว่า db ถูกสร้างก่อนจะปิด
+    if (db) {
+      db.close();
+    }
   }
 
   return {
