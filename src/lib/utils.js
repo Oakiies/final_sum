@@ -48,7 +48,6 @@ export function generateSQLQuery(fromStation, toStation, selectedDate) {
     let fromStationSubstr = fromStation.substr(3, 2);
     let direction = "";
     let sqlQuery = "";
-    
     const date = selectedDate;
 
     if (toStationNum > fromStationNum) {

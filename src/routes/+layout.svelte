@@ -33,6 +33,7 @@
 	setupViewTransition();
 
 	$: metaTags = extend(true, {}, data.baseMetaTags, $page.data.pageMetaTags);
+	
 </script>
 
 <MetaTags {...metaTags} />

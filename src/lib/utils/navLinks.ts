@@ -50,14 +50,14 @@ export const mainNavLinks = {
 	list_ticket: createNavLink(
 		{
 			title: "รายการตั๋วโดยสาร",
-			href: route('/list_ticket'),
+			href: route('/customer/list_ticket'),
 			ariaLabel: 'Go to list ticket'
 		}
 	),
 	show_trip: createNavLink(
 		{
 			title: "ค้นหาเที่ยวโดยสาร",
-			href: route('/search'),
+			href: route('/customer/search'),
 			ariaLabel: 'Go to show trip'
 		}
 	)

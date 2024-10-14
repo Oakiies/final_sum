@@ -1,6 +1,6 @@
 import Database from 'better-sqlite3';
 
-const db = new Database('/Users/oakky/Documents/real_final/src/lib/databaseStorage/dbforTrain-2.db', { verbose: console.log });
+const db = new Database('src/lib/databaseStorage/dbforTrain-2.db', { verbose: console.log });
 
 function formatDate(date: Date): string {
   const year = date.getFullYear();

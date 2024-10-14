@@ -7,9 +7,9 @@
 	import ThemeToggler from './ThemeToggler.svelte';
 </script>
 <!-- เเถบเส้นตรง nav bar -->
-<header class="relative mb-10 border-b">
+<header class="relative bg-[#102C57]">
 	<!-- เเถบ NAVBAR -->
-	<div class="container flex items-center justify-between p-2 bg-[#102C57]">
+	<div class="container flex items-center justify-between p-2">
 		<Button href={route('/')} variant="link" class="text-white font-bold text-xl">OURTRAIN</Button>
 		<div class="flex gap-2">
 			<SiteMainNav />
