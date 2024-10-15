@@ -41,8 +41,7 @@
  
   <div class="flex px-8 lg:px-12 justify-center bg-white min-h-screen">
     <div class="container mx-auto p-4">
-        <h1 class="text-3xl font-bold mb-8 text-center text-[#102C57] underline">จัดการเที่ยวโดยสาร</h1>
-        <h2 class="text-xl font-bold mb-4">เที่ยวโดยสารปัจจุบัน</h2>
+        <h1 class="text-3xl font-bold mb-8 text-center text-[#102C57] underline">เพิ่มสถานี</h1>
         <div class="grid grid-cols-5 gap-4">
           <input
             type="text"

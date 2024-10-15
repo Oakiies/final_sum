@@ -46,8 +46,12 @@ export const POST = async ({ request }) => {
         const availableSeats = findSeats.all(tripId, seatType, quantity);
 
         if (availableSeats.length < quantity) {
-            throw new Error('Not enough seats available');
+            alert('ไม่พอที่นั่ง กรุณาเลือกจำนวนที่นั่งใหม่!');
+        } else {
+            // โค้ดการจองที่นั่งตามปกติ
+            console.log('ดำเนินการจองที่นั่ง');
         }
+        
 
         console.log('Available seats:', availableSeats);
 

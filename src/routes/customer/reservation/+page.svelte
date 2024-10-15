@@ -97,7 +97,7 @@ async function confirmBooking() {
             Swal.fire({
                 icon: 'error',
                 title: 'เกิดข้อผิดพลาด',
-                text: 'เกิดข้อผิดพลาดในการบันทึกการจอง: ' + responseData.message
+                text: 'เกิดข้อผิดพลาดในการจองตั๋วโปรดตรวจสอบข้อมูลการจองให้ครบถ้วน'
             });
         }
     } catch (error) {
