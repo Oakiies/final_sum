@@ -83,6 +83,33 @@
             console.log("ข้อมูลที่เก็บใน sessionStorage:", bookingData);
             console.log("บันทึกข้อมูลใน sessionStorage เรียบร้อย");
 
+            alert(`การจองเสร็จสมบูรณ์!
+                รหัสการชำระเงิน: ${responseData.paymentId}
+                จำนวนเงิน: ${bookingData.totalPrice} บาท
+                สถานะ: รอการชำระเงิน`);
+
+            // นำผู้ใช้ไปยังหน้า payment
+            setTimeout(() => {
+                window.location.href = 'payment';
+            }, 100);
+        } else {
+            console.error("ข้อผิดพลาดจากเซิร์ฟเวอร์:", responseData);
+            alert('เกิดข้อผิดพลาดในการบันทึกการจอง: ' + responseData.message);
+        }
+    } catch (error) {
+        console.error("เกิดข้อผิดพลาดใน confirmBooking:", error);
+        alert('เกิดข้อผิดพลาดในการเชื่อมต่อกับเซิร์ฟเวอร์ กรุณาลองใหม่อีกครั้ง');
+    }
+}
+if (response.ok) {
+            console.log("การจองเสร็จสมบูรณ์ การตอบกลับจากเซิร์ฟเวอร์:", responseData);
+
+            sessionStorage.setItem('paymentId', responseData.paymentId.toString());
+            sessionStorage.setItem('totalPrice', bookingData.totalPrice.toString());
+
+            console.log("บันทึกข้อมูลใน sessionStorage เรียบร้อย");
+
+            // ใช้ SweetAlert เพื่อแสดงผลลัพธ์
             Swal.fire({
                 icon: 'success',
                 title: 'การจองเสร็จสมบูรณ์!',

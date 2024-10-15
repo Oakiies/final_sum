@@ -1,15 +1,34 @@
 <script>
-    import { onMount } from "svelte";
     import { redirect } from '@sveltejs/kit';
+    import { onMount } from 'svelte';
     import Swal from 'sweetalert2'
-    
+
     let selectedSeatType = "";
     let selectedQuantity = 1;
     export let data;
-    $: ({ loggedOnUserName, tripData, userInfo, availableSeats, travelTimeMinutes, old_seat_id} = data || {});
-    
+    $: ({ loggedOnUserName, tripData, userInfo = {}, availableSeats, travelTimeMinutes } = data || {});
+
+    // User editable variables with default values to prevent undefined errors
+    let editedFirstname = userInfo?.firstname || '';
+    let editedLastname = userInfo?.lastname || '';
+    let editedPhonenumber = userInfo?.phonenumber || '';
+    let isSaved = false; // New state to track if user info is saved
+
+
     // เพิ่มการคำนวณเวลาถึงปลายทาง
     $: arrivalTime = calculateArrivalTime(tripData?.fromDatetime, travelTimeMinutes);
+
+    function saveUserInfo() {
+        if (editedFirstname && editedLastname && editedPhonenumber) {
+            isSaved = true; // Set to true when user info is saved
+            sessionStorage.setItem('firstname', editedFirstname);
+            sessionStorage.setItem('lastname', editedLastname);
+            sessionStorage.setItem('phonenumber', editedPhonenumber);
+            alert('ข้อมูลถูกบันทึกเรียบร้อย');
+        } else {
+            alert('โปรดกรอกข้อมูลให้ครบถ้วน');
+        } 
+    }
 
     function calculateArrivalTime(fromDatetime, travelTimeMinutes) {
         if (!fromDatetime || !travelTimeMinutes) return '';
@@ -34,6 +53,10 @@
         return translations[seatType] || seatType;
     }
 
+    // Bind input fields to variables
+    let firstname = userInfo?.firstname || "";
+    let lastname = userInfo?.lastname || "";
+    let phonenumber = userInfo?.phonenumber || "";
     // Calculate total price
     $: totalPrice = selectedSeatType
         ? availableSeats.find(seat => seat.seat_type === selectedSeatType)?.farePerSeat * selectedQuantity || 0
@@ -49,7 +72,6 @@
 
     async function confirmBooking() {
     console.log("เริ่มฟังก์ชัน confirmBooking");
-
     const bookingData = {
         userId: userInfo.passenger_id,
         tripId: tripData.tripId,
@@ -57,32 +79,30 @@
         quantity: selectedQuantity,
         totalPrice: totalPrice,
         fromStation: tripData.user_from_station,
-        toStation: tripData.user_to_station,
-        old_seat_id: tripData.old_seat_id
+        toStation: tripData.user_to_station
     };
-
     console.log("ข้อมูลการจองที่จะส่ง:", bookingData);
 
     try {
-        const response = await fetch('reservation_change/api', {
+        const response = await fetch('reservation/api', {
             method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify(bookingData),
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(bookingData)
         });
-
-        const responseData = await response.json();
         console.log("สถานะการตอบกลับจากเซิร์ฟเวอร์:", response.status);
+        const responseData = await response.json();
 
         if (response.ok) {
             console.log("การจองเสร็จสมบูรณ์ การตอบกลับจากเซิร์ฟเวอร์:", responseData);
 
-            // เก็บข้อมูลใน sessionStorage
-            sessionStorage.setItem('bookingData', JSON.stringify(bookingData));
             sessionStorage.setItem('paymentId', responseData.paymentId.toString());
-            sessionStorage.setItem('operationType', 'change');
-            console.log("ข้อมูลที่เก็บใน sessionStorage:", bookingData);
+            sessionStorage.setItem('totalPrice', bookingData.totalPrice.toString());
+
             console.log("บันทึกข้อมูลใน sessionStorage เรียบร้อย");
 
+            // ใช้ SweetAlert เพื่อแสดงผลลัพธ์
             Swal.fire({
                 icon: 'success',
                 title: 'การจองเสร็จสมบูรณ์!',
@@ -100,7 +120,7 @@
             Swal.fire({
                 icon: 'error',
                 title: 'เกิดข้อผิดพลาด',
-                text: 'เกิดข้อผิดพลาดในการจองตั๋วโปรดตรวจสอบข้อมูลการจองให้ครบถ้วน'
+                text: 'เกิดข้อผิดพลาดในการบันทึกการจอง: ' + responseData.message
             });
         }
     } catch (error) {
@@ -112,11 +132,12 @@
         });
     }
 }
+
 </script>
 
 <div class="p-8">
     <main class="">
-        <h2 class="text-3xl font-bold mb-4 text-[#102C57]">เปลี่ยนเเปลงตั๋วโดยสาร</h2>
+        <h2 class="text-3xl font-bold mb-4 text-[#102C57]">จองตั๋วโดยสาร</h2>
         <p class="mb-6 text-sm text-gray-600">
             ท่านจำเป็นต้องกรอกข้อมูลต่อไปนี้ให้ครบถ้วน
             และดำเนินการชำระค่าธรรมเนียมตั๋วโดยสารภายใน 5
@@ -140,8 +161,8 @@
                 </p>
                 <p class="text-[#102C57]">
                     <span class="font-semibold">เวลา</span>
-                    {new Date(tripData.fromDatetime).toLocaleTimeString('th-TH', {hour: '2-digit', minute:'2-digit'})}น. - 
-                    {new Date(tripData.toDatetime).toLocaleTimeString('th-TH', {hour: '2-digit', minute:'2-digit'})}น.
+                    {new Date(tripData.fromDatetime).toLocaleTimeString('th-TH', {hour: '2-digit', minute:'2-digit'})} - 
+                    {new Date(tripData.toDatetime).toLocaleTimeString('th-TH', {hour: '2-digit', minute:'2-digit'})}
                 </p>
             </div>
         </div>
@@ -199,30 +220,85 @@
         <div class="border-t border-gray-300 my-12"></div>
 
         <div class="mt-8">
-            <h3 class="font-semibold mb-4 text-[#102C57] text-lg">โปรดตรวจสอบข้อมูลต่อไปนี้</h3>
-            <div class="grid grid-cols-4 gap-4">
-                <p>ชื่อ: {userInfo.firstname || '-'}</p>
-                <p>นามสกุล: {userInfo.lastname || '-'}</p>
-                <p>เบอร์โทรศัพท์: {userInfo.phonenumber || '-'}</p>
-                <p>อีเมล: {userInfo.email || '-'}</p>
-                <p>เที่ยวโดยสาร: {tripData.tripName}</p>
-                <p>จาก: {tripData.user_from_station} ถึง {tripData.user_to_station}</p>
-                <p>วันที่เดินทาง: {new Date(tripData.fromDatetime).toLocaleDateString('th-TH')}</p>
-                <p>เวลา: {new Date(tripData.fromDatetime).toLocaleTimeString('th-TH', {hour: '2-digit', minute:'2-digit'})}น. - 
-                    {new Date(tripData.toDatetime).toLocaleTimeString('th-TH', {hour: '2-digit', minute:'2-digit'})}น.</p>
-                <p>ชั้นโดยสาร: {selectedSeatType ? translateSeatType(selectedSeatType) : '-'}</p>
-                <p>จำนวน: {selectedQuantity}</p>
-                <p>ราคาต่อที่นั่ง: {selectedSeatType ? availableSeats.find(seat => seat.seat_type === selectedSeatType)?.farePerSeat.toFixed(2) : '-'} บาท</p>
-                <p>ราคารวม: {totalPrice.toFixed(2)} บาท</p>
-            </div>
-        </div>
+            <div class="mt-8">
+                <h3 class="font-semibold mb-4 text-[#102C57] text-lg">โปรดตรวจสอบข้อมูลต่อไปนี้</h3>
+                <div class="grid grid-cols-2 gap-8">
+                    <!-- Left Column: User Input Fields -->
+                    <div class="space-y-4">
+                        <div class="grid grid-cols-2 items-center gap-4">
+                            <label for="firstname" class="font-semibold text-gray-800">ชื่อ:</label>
+                            <input
+                                type="text"
+                                id="firstname"
+                                bind:value={editedFirstname}
+                                class="w-full border border-gray-300 rounded px-2 py-1"
+                            />
+                        </div>
 
-        <button
-            style="background-color: #102C57;"
-            class="mt-6 bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-lg transition duration-300 ease-in-out transform hover:-translate-y-1"
-            on:click={confirmBooking}
-        >
-            ยืนยันการจองตั๋วโดยสาร
-        </button>
+                        <div class="grid grid-cols-2 items-center gap-4">
+                            <label for="firstname" class="font-semibold text-gray-800">นามสกุล:</label>
+                            <input
+                                type="text"
+                                id="firstname"
+                                bind:value={editedLastname}
+                                class="w-full border border-gray-300 rounded px-2 py-1"
+                            />
+                        </div>
+
+                        <div class="grid grid-cols-2 items-center gap-4">
+                            <label for="phonenumber" class="font-semibold text-gray-800">เบอร์โทรศัพท์:</label>
+                            <input
+                                type="text"
+                                id="phonenumber"
+                                bind:value={editedPhonenumber}
+                                class="w-full border border-gray-300 rounded px-2 py-1"
+                            />
+                        </div>
+            
+                        <button
+                            on:click={saveUserInfo}
+                            style="background-color: #102C57;"
+                            class="mt-6 bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-lg transition duration-300 ease-in-out transform hover:-translate-y-1"
+                            >
+                            บันทึกข้อมูล
+                        </button>
+                    </div>
+            
+                    <!-- Right Column: Booking Details -->
+                    <div class="space-y-4">
+                        <p><span class="font-semibold text-gray-800">เที่ยวโดยสาร:</span> {tripData.tripName}</p>
+                        <p><span class="font-semibold text-gray-800">จาก:</span> {tripData.user_from_station} ถึง {tripData.user_to_station}</p>
+                        <p>
+                            <span class="font-semibold text-gray-800">วันที่เดินทาง:</span> 
+                            {new Date(tripData.fromDatetime).toLocaleDateString('th-TH')}
+                        </p>
+                        <p>
+                            <span class="font-semibold text-gray-800">เวลา:</span> 
+                            {new Date(tripData.fromDatetime).toLocaleTimeString('th-TH', { hour: '2-digit', minute: '2-digit' })} - 
+                            {new Date(tripData.toDatetime).toLocaleTimeString('th-TH', {hour: '2-digit', minute:'2-digit'})}
+                        </p>
+                        <p><span class="font-semibold text-gray-800">ชั้นโดยสาร:</span> {selectedSeatType ? translateSeatType(selectedSeatType) : '-'}</p>
+                        <p><span class="font-semibold text-gray-800">จำนวน:</span> {selectedQuantity}</p>
+                        <p>
+                            <span class="font-semibold text-gray-800">ราคาต่อที่นั่ง:</span> 
+                            {selectedSeatType 
+                                ? availableSeats.find(seat => seat.seat_type === selectedSeatType)?.farePerSeat.toFixed(2) 
+                                : '-'} บาท
+                        </p>
+                        <p><span class="font-semibold text-gray-800">ราคารวม:</span> {totalPrice.toFixed(2)} บาท</p>
+                    </div>
+                </div>
+            </div>
+            
+
+            {#if isSaved}
+            <button
+                style="background-color: #102C57;"
+                class="mt-6 bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-lg transition duration-300 ease-in-out transform hover:-translate-y-1"
+                on:click={confirmBooking}
+            >
+                ยืนยันการจองตั๋วโดยสาร
+            </button>
+        {/if}
     </main>
 </div>

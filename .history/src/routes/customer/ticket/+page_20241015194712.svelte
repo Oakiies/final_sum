@@ -25,7 +25,6 @@
       seat: ticket.seat_id,
       train: ticket.train_id,
       passenger_id: ticket.passenger_id,
-      formatted_trip_id: ticket.formatted_trip_id
     };
   }
 
@@ -83,7 +82,7 @@
         </div>
 
         <div class="grid sm:grid-cols-3 mb-6 gap-4">
-          <p class="text-lg font-normal p-6">เที่ยวโดยสาร {getFormattedTicket(ticket).formatted_trip_id}</p>
+          <p class="text-lg font-normal p-6">เที่ยวโดยสาร {formatted_trip_id}</p>
           <p class="text-lg font-normal p-6">วันที่เดินทาง {getFormattedTicket(ticket).date}</p>
           <p class="text-lg font-normal p-6">เวลาที่ออก {getFormattedTicket(ticket).time}</p>
         </div>

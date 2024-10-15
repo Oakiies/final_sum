@@ -83,35 +83,25 @@
             console.log("ข้อมูลที่เก็บใน sessionStorage:", bookingData);
             console.log("บันทึกข้อมูลใน sessionStorage เรียบร้อย");
 
-            Swal.fire({
-                icon: 'success',
-                title: 'การจองเสร็จสมบูรณ์!',
-                html: `
-                    <p>รหัสการชำระเงิน: ${responseData.paymentId}</p>
-                    <p>จำนวนเงิน: ${bookingData.totalPrice} บาท</p>
-                    <p>สถานะ: รอการชำระเงิน</p>
-                `,
-                confirmButtonText: 'ไปยังหน้าชำระเงิน'
-            }).then(() => {
-                window.location.href = 'payment'; // ไปยังหน้าชำระเงินหลังจากผู้ใช้กดปุ่ม
-            });
+            alert(`การจองเสร็จสมบูรณ์!
+                รหัสการชำระเงิน: ${responseData.paymentId}
+                จำนวนเงิน: ${bookingData.totalPrice} บาท
+                สถานะ: รอการชำระเงิน`);
+
+            // นำผู้ใช้ไปยังหน้า payment
+            setTimeout(() => {
+                window.location.href = 'payment';
+            }, 100);
         } else {
             console.error("ข้อผิดพลาดจากเซิร์ฟเวอร์:", responseData);
-            Swal.fire({
-                icon: 'error',
-                title: 'เกิดข้อผิดพลาด',
-                text: 'เกิดข้อผิดพลาดในการจองตั๋วโปรดตรวจสอบข้อมูลการจองให้ครบถ้วน'
-            });
+            text: 'เกิดข้อผิดพลาดในการจองตั๋วโปรดตรวจสอบข้อมูลการจองให้ครบถ้วน'
         }
     } catch (error) {
         console.error("เกิดข้อผิดพลาดใน confirmBooking:", error);
-        Swal.fire({
-            icon: 'error',
-            title: 'ข้อผิดพลาดในการเชื่อมต่อ',
-            text: 'เกิดข้อผิดพลาดในการเชื่อมต่อกับเซิร์ฟเวอร์ กรุณาลองใหม่อีกครั้ง'
-        });
+        alert('เกิดข้อผิดพลาดในการเชื่อมต่อกับเซิร์ฟเวอร์ กรุณาลองใหม่อีกครั้ง');
     }
 }
+
 </script>
 
 <div class="p-8">

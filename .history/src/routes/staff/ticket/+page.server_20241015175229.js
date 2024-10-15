@@ -18,7 +18,6 @@ export const load = async ({ url }) => {
       SELECT
         p.passenger_id, p.firstname, p.lastname, p.phonenumber,
         r.reserved_seat_id, r.reserve_trip_id, r.passenger_id, r.payment_id, r.reserve_status,
-        UPPER(REPLACE(SUBSTR(r.reserve_trip_id, 4), '_', ' ')) AS formatted_trip_id,
         r.from_station_id, r.to_station_id,
         s.seat_id, s.seat_type, s.train_id,
         sta_from.station_name AS from_station_name,

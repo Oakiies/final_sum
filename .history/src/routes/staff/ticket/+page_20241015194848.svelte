@@ -93,7 +93,7 @@ let phonenumber = '';
            <p class="text-lg font-normal p-7 col-span-2">เบอร์โทรศัพท์ {phonenumber}</p>
          </div>
          <div class="grid sm:grid-cols-3 mb-6 gap-4">
-           <div class="text-lg font-normal p-6">เที่ยวโดยสาร {getFormattedTicket(ticket).formatted_trip_id}</div>
+           <div class="text-lg font-normal p-6">เที่ยวโดยสาร {getFormattedTicket(ticket).passenger_trip}</div>
            <div class="text-lg font-normal p-6">วันที่เดินทาง {getFormattedTicket(ticket).date}</div>
            <div class="text-lg font-normal p-6">เวลาที่ออก {getFormattedTicket(ticket).time}</div>
          </div>

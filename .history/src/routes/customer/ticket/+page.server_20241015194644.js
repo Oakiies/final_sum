@@ -7,6 +7,7 @@ import path from 'path';
 export const load = async ({ url }) => {
   const dbPath = path.resolve('src/lib/databaseStorage/dbforTrain-2.db');
   const db = new Database(dbPath);
+
   const paymentId = url.searchParams.get('paymentId');
 
   if (!paymentId) {
@@ -18,7 +19,8 @@ export const load = async ({ url }) => {
       SELECT
         p.passenger_id, p.firstname, p.lastname, p.phonenumber,
         r.reserved_seat_id, r.reserve_trip_id, r.passenger_id, r.payment_id, r.reserve_status,
-        UPPER(REPLACE(SUBSTR(r.reserve_trip_id, 4), '_', ' ')) AS formatted_trip_id,
+                  UPPER(REPLACE(SUBSTR(r.reserve_trip_id, 4), '_', ' ')) AS formatted_trip_id,
+
         r.from_station_id, r.to_station_id,
         s.seat_id, s.seat_type, s.train_id,
         sta_from.station_name AS from_station_name,
@@ -69,7 +71,6 @@ export const actions = {
     try {
       // ประมวลผลการชำระเงิน
       await processPayment(paymentId, paymentMethod);
-      
       // เปลี่ยนเส้นทางไปยังหน้าตั๋วพร้อมกับ paymentId
       throw window.location.href(303, `/ticket?paymentId=${(paymentId)}`);
     } catch (error) {
