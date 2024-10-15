@@ -31,6 +31,5 @@ export const actions = {
     console.log(`Redirecting to: ticket?paymentId=${paymentId}`);
     throw redirect(303, `ticket?paymentId=${paymentId}`);
   }
-  
 };
 

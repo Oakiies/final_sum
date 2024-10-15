@@ -8,10 +8,11 @@
 <script lang="ts">
 	import { page } from '$app/stores';
 	import type { HTMLAttributes } from 'svelte/elements';
+
 	import { mainNavLinks } from '$lib/utils/navLinks';
 	import { cn } from '$lib/utils/styleTransitionUtils';
+
 	import Button from '$components/ui/button/button.svelte';
-	import SubmitButton from '$components/form/SubmitButton.svelte';
 
 	let className: HTMLAttributes<HTMLElement>['class'] = undefined;
 	export { className as class };
@@ -23,20 +24,19 @@
 
 	// static classes
 	const staticClasses =
-		'text-white absolute left-0 z-50 w-full px-4 pt-10 transition-transform duration-300 top-full h-svh sm:h-full sm:relative sm:w-fit sm:-translate-x-0 sm:p-0 bg-secondary sm:bg-transparent hover:bg-none';
+		'absolute left-0 z-50 w-full px-4 pt-10 transition-transform duration-300 top-full h-svh sm:h-full sm:relative sm:w-fit sm:-translate-x-0 sm:p-0 bg-secondary sm:bg-transparent';
 
 	const sessionLinks = {
-		show_trip: mainNavLinks.show_trip,
-		list: mainNavLinks.list_ticket,
+		home: mainNavLinks.home,
+		dashboard: mainNavLinks.dashboard
 	};
 
 	const noneSessionLinks = {
-		show_trip: mainNavLinks.show_trip,
-		list: mainNavLinks.list_ticket,
+		home: mainNavLinks.home,
 		login: mainNavLinks.login,
-		register: mainNavLinks.register,
+		register: mainNavLinks.register
 	};
-
+	buttonVariants
 	$: isSession = $page.data.session;
 </script>
 
@@ -51,21 +51,15 @@
 			<li>
 				<Button
 					href={link.href}
-					variant="outline"
+					variant="ghost"
+					size="lg"
 					aria-label={link.ariaLabel}
 					aria-current={isCurrentPage}
-					class={isCurrentPage ? '' : 'text-muted-foreground'}
+					class={'rounded-xl', isCurrentPage ? '' : 'text-muted-foreground'}
 				>
 					{link.title}
 				</Button>
-			</li>
+			</li>			
 		{/each}
-		{#if isSession}
-			<li>
-				<form action="/logout" method="POST">
-					<SubmitButton class="text-sm font-bold">ออกจากระบบ</SubmitButton>
-				</form>
-			</li>
-		{/if}
 	</ul>
 </nav>

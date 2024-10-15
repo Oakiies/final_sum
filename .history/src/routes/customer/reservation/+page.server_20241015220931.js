@@ -1,14 +1,3 @@
-import { redirect } from '@sveltejs/kit';
-import { SESSION_COOKIE_NAME } from '$lib/constants';
-import { getUserName } from '$lib/database/databaseUtils.server';
-import { route } from '$lib/ROUTES';
-import { get_personinfo, count_seat, getFareInfo } from '$lib/utils_reserve.js';
-import Database from 'better-sqlite3';
-import path from 'path';
-import { goto } from '$app/navigation';
-
-const dbPath = path.resolve('src/lib/databaseStorage/dbforTrain-2.db');
-const db = new Database(dbPath);
 export const load = async ({ cookies, locals, url }) => {
   const sessionCookie = cookies.get(SESSION_COOKIE_NAME);
 

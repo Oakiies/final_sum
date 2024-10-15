@@ -23,7 +23,7 @@
 
 	// static classes
 	const staticClasses =
-		'text-white absolute left-0 z-50 w-full px-4 pt-10 transition-transform duration-300 top-full h-svh sm:h-full sm:relative sm:w-fit sm:-translate-x-0 sm:p-0 bg-secondary sm:bg-transparent hover:bg-none';
+		'text-white absolute left-0 z-50 w-full pt-10 transition-transform duration-300 top-full h-svh sm:h-full sm:relative sm:w-fit sm:-translate-x-0 sm:p-0 bg-secondary sm:bg-transparent hover:bg-none';
 
 	const sessionLinks = {
 		show_trip: mainNavLinks.show_trip,
@@ -36,8 +36,8 @@
 		login: mainNavLinks.login,
 		register: mainNavLinks.register,
 	};
-
 	$: isSession = $page.data.session;
+	
 </script>
 
 <nav

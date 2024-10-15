@@ -7,7 +7,6 @@ import Database from 'better-sqlite3'; // ตรวจสอบการติ�
 
 export const load = async ({ cookies, url }) => {
   const sessionCookie = cookies.get(SESSION_COOKIE_NAME);
-
   let userSession;
 
   try {
