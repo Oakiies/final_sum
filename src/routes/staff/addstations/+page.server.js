@@ -4,7 +4,7 @@ import "../../../app.css";  // Adjust the path if your CSS file is located elsew
 
 export const actions = {
   addStation: async ({ request }) => {
-    const dbPath = path.resolve('src/database/dbforTrain.db');
+    const dbPath = path.resolve('src/lib/databaseStorage/dbforTrain-3.db');
     const db = new Database(dbPath);
     const formData = await request.formData();
     const stationId = formData.get('station_id');

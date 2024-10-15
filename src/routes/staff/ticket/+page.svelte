@@ -33,6 +33,7 @@ let phonenumber = '';
      seat: ticket.seat_id,
      train: ticket.train_id,
      passenger_id: ticket.passenger_id,
+     reserved_seat_id: ticket.reserved_seat_id
    };
  }
  
@@ -40,8 +41,9 @@ let phonenumber = '';
  async function generateQRCode(ticket) {
    const qrData = JSON.stringify({
      passenger_id: ticket.passenger_id,
+     reserve_id: ticket.reserved_seat_id,
      check: ticket.train,
-     reserve_id: ticket.reserve_id,
+     
    });
    
    try {

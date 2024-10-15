@@ -7,7 +7,6 @@
   let showAddTripForm = false;  // Toggle visibility of the Add Trip form
   let showAddStationForm = false
   let groupedStations = {};
-  console.log(trips)
 
   for (let i = 0; i < stations.length; i++) {
     const station = stations[i];
@@ -91,12 +90,10 @@
 
   function editTrip(tripId) {
     editingTripId = tripId;
-    console.log(trips)
   }
   function findTime(start, end) {
   for (let i = 0; i < lstLine.length; i++) {
     if (locationDict[lstLine[i]].includes(start) && locationDict[lstLine[i]].includes(end)) {
-      //console.log(groupedStations[lstLine[i]]);
 
       let stations = groupedStations[lstLine[i]];
       stations.sort((a, b) => {
@@ -105,7 +102,6 @@
         return numA - numB; // Compare the numbers
       });
 
-      //console.log(stations);
 
       // Find the indices of the start and end stations
       let startIndex = stations.findIndex(station => station[1] === start);
@@ -125,13 +121,10 @@
         }
       }
 
-      //console.log(`Total time from ${start} to ${end}: ${totalTime} seconds`);
       return totalTime;
     }
   }
 }
-
-console.log(findTime('สระบุรี', 'สถานีกลางกรุงเทพอภิวัฒน์'))
 
 for (let i = 0; i < trips.length; i++) {
     let dateTime = new Date(trips[i].from_datetime); // Your initial date-time
@@ -155,7 +148,7 @@ for (let i = 0; i < trips.length; i++) {
     trips[i]["from_datetime"] = formattedDateTime;
     trips[i]["arrivalTime"] = result.replace(',','').slice(0, 16); // Format to "YYYY-MM-DDTHH:MM"
 }
-  console.log(trips)
+
 
   function editStation(stationId) {
     editingStationId = stationId;
@@ -177,7 +170,7 @@ for (let i = 0; i < trips.length; i++) {
     if ((st_name.includes(trip.start)) && (st_name.includes(trip.end))) {
 
       try {
-          const response = await fetch('/manage/?/updateTrip', {
+          const response = await fetch('/staff/manage/?/updateTrip', {
               method: 'POST',
               body: formData
           });
@@ -221,7 +214,7 @@ async function saveStation(stationId) {
     if (st_name.includes(station.station_name)) {
 
       try {
-          const response = await fetch('/manage/?/updateStation', {
+          const response = await fetch('/staff/manage/?/updateStation', {
               method: 'POST',
               body: formData
           });
@@ -262,7 +255,7 @@ async function saveStation(stationId) {
     }
 
     try {
-      const response = await fetch('/manage/?/deleteTrip', {
+      const response = await fetch('/staff/manage/?/deleteTrip', {
         method: 'POST',
         body: new URLSearchParams({ tripId })
       });
@@ -293,7 +286,7 @@ async function saveStation(stationId) {
     }
 
     try {
-      const response = await fetch('/manage/?/deleteStation', {
+      const response = await fetch('/staff/manage/?/deleteStation', {
         method: 'POST',
         body: new URLSearchParams({ stationId })
       });
@@ -322,81 +315,84 @@ async function saveStation(stationId) {
   }
 </script>
 
-<div class="flex px-8 lg:px-12 justify-center min-h-screen bg-white">
+<div class="flex justify-center px-8 lg:px-12 min-h-screen bg-white">
   <div class="container mx-auto p-4">
-    <h1 class="text-3xl font-bold mb-8 text-center text-[#102C57] underline">จัดการเที่ยวโดยสาร</h1>
-    <h2 class="text-xl font-bold mb-4">เที่ยวโดยสารปัจจุบัน</h2>
+    <h1 class="text-3xl font-bold text-center text-[#102C57] underline mb-8">
+      จัดการเที่ยวโดยสาร
+    </h1>
+    <h2 class="text-xl font-bold mb-4 text-[#102C57]">เที่ยวโดยสารปัจจุบัน</h2>
+
+    <!-- Trip Management Table -->
     <section class="overflow-auto h-96">
-      <table class="table-auto w-full text-left border-collapse whitespace-nowrap">
-        <thead class="sticky top-0">
-          <tr class="bg-gray-200">
-            <th class="px-2 py-2 sm:px-4 sm:py-2">รหัสเที่ยวโดยสาร</th>
-            <th class="px-2 py-2 sm:px-4 sm:py-2">ต้นทาง</th>
-            <th class="px-2 py-2 sm:px-4 sm:py-2">ปลายทาง</th>
-            <th class="px-2 py-2 sm:px-4 sm:py-2">วัน / เวลาที่ออก</th>
-            <th class="px-2 py-2 sm:px-4 sm:py-2">เวลาที่ถึง</th>
-            <th class="px-2 py-2 sm:px-4 sm:py-2">ชั้นโดยสาร</th>
-            <th class="px-2 py-2 sm:px-4 sm:py-2">จำนวนที่นั่ง</th>
-            <th class="px-2 py-2 sm:px-4 sm:py-2">พนักงานตรวจ</th>
-            <th class="px-2 py-2 sm:px-4 sm:py-2">จัดการเที่ยวโดยสาร</th>
+      <table class="w-full text-left border-collapse table-auto whitespace-nowrap">
+        <thead class="sticky top-0 bg-gray-200">
+          <tr>
+            <th class="px-4 py-2">รหัสเที่ยวโดยสาร</th>
+            <th class="px-4 py-2">ต้นทาง</th>
+            <th class="px-4 py-2">ปลายทาง</th>
+            <th class="px-4 py-2">วัน / เวลาที่ออก</th>
+            <th class="px-4 py-2">เวลาที่ถึง</th>
+            <th class="px-4 py-2">ชั้นโดยสาร</th>
+            <th class="px-4 py-2">จำนวนที่นั่ง</th>
+            <th class="px-4 py-2">พนักงานตรวจ</th>
+            <th class="px-4 py-2">จัดการเที่ยวโดยสาร</th>
           </tr>
         </thead>
         <tbody>
           {#each trips as trip}
             <tr class="even:bg-gray-100">
-              <td class="border px-2 py-2 sm:px-4 sm:py-2">{trip.trip_id}</td>
-              <td class="border px-2 py-2 sm:px-4 sm:py-2">
+              <td class="border px-4 py-2">{trip.trip_id}</td>
+              <td class="border px-4 py-2">
                 {#if editingTripId === trip.trip_id}
                   <input type="text" bind:value={trip.start} class="w-full border p-1" />
                 {:else}
                   {trip.start}
                 {/if}
               </td>
-              <td class="border px-2 py-2 sm:px-4 sm:py-2">
+              <td class="border px-4 py-2">
                 {#if editingTripId === trip.trip_id}
                   <input type="text" bind:value={trip.end} class="w-full border p-1" />
                 {:else}
                   {trip.end}
                 {/if}
               </td>
-              <td class="border px-2 py-2 sm:px-4 sm:py-2">
+              <td class="border px-4 py-2">
                 {#if editingTripId === trip.trip_id}
                   <input type="datetime-local" bind:value={trip.from_datetime} class="w-full border p-1" />
                 {:else}
                   {trip.from_datetime}
                 {/if}
               </td>
-              <td class="border px-2 py-2 sm:px-4 sm:py-2">{trip.arrivalTime}</td>
-              <td class="border px-2 py-2 sm:px-4 sm:py-2">{trip.available_classes}</td>
-              <td class="border px-2 py-2 sm:px-4 sm:py-2">{trip.seats}</td>
-              <td class="border px-2 py-2 sm:px-4 sm:py-2">
+              <td class="border px-4 py-2">{trip.arrivalTime}</td>
+              <td class="border px-4 py-2">{trip.available_classes}</td>
+              <td class="border px-4 py-2">{trip.seats}</td>
+              <td class="border px-4 py-2">
                 {#if editingTripId === trip.trip_id}
                   <input type="text" bind:value={trip.staff_id} class="w-full border p-1" />
                 {:else}
                   {trip.staff_id}
                 {/if}
               </td>
-              <td class="border px-2 py-2 sm:px-4 sm:py-2 flex flex-col sm:flex-row">
+              <td class="border px-4 py-2 flex flex-col sm:flex-row">
                 {#if editingTripId === trip.trip_id}
-                  <button 
-                    on:click={() => saveTrip(trip.trip_id)} 
-                    class="bg-green-500 text-white w-full sm:w-32 px-2 py-2 sm:px-4 sm:py-2 rounded mb-2 sm:mb-0 sm:mr-2">
+                  <button
+                    on:click={() => saveTrip(trip.trip_id)}
+                    class="w-full sm:w-32 bg-green-500 text-white rounded px-4 py-2 mb-2 sm:mr-2">
                     บันทึก
                   </button>
                 {:else}
-                  <button 
-                    on:click={() => editTrip(trip.trip_id)} 
-                    class="bg-[#102C57] text-white w-full sm:w-32 px-2 py-2 sm:px-4 sm:py-2 rounded mb-2 sm:mb-0 sm:mr-2">
+                  <button
+                    on:click={() => editTrip(trip.trip_id)}
+                    class="w-full sm:w-32 bg-[#102C57] text-white rounded px-4 py-2 mb-2 sm:mr-2">
                     แก้ไข
                   </button>
                 {/if}
-                <button 
-                  on:click={() => deleteTrip(trip.trip_id)} 
-                  class="bg-red-500 text-white w-full sm:w-32 px-2 py-2 sm:px-4 sm:py-2 rounded">
+                <button
+                  on:click={() => deleteTrip(trip.trip_id)}
+                  class="w-full sm:w-32 bg-red-500 text-white rounded px-4 py-2">
                   ลบเที่ยวโดยสาร
                 </button>
               </td>
-              
             </tr>
           {/each}
         </tbody>
@@ -404,90 +400,100 @@ async function saveStation(stationId) {
     </section>
 
     <!-- Add Trip Button -->
-    <div class="flex justify-center items-center">
-      <a href="/addtrips" class="btn bg-[#102C57] text-white text-center w-1/4 mt-10 sm:w-1/6 px-2 py-2 sm:px-4 sm:py-2 rounded">เพิ่มเที่ยวโดยสาร</a>
+    <div class="flex justify-center mt-10">
+      <a
+        href="/staff/addtrips"
+        class="w-1/2 sm:w-1/6 text-center bg-[#102C57] text-white rounded px-4 py-2">
+        เพิ่มเที่ยวโดยสาร
+      </a>
     </div>
-  </div>
-</div>
 
-<!-- Main content -->
-<div class="flex px-8 mb-48 lg:px-12 justify-center bg-white min-h-screen">
-  <div class="container mx-auto px-4">
-    <h2 class="text-xl font-bold mb-4">สถานีรถไฟ</h2>
+    <h2 class="text-xl font-bold mt-12 mb-4 text-[#102C57]">สถานีรถไฟ</h2>
+
+    <!-- Station Management Table -->
     <section class="overflow-auto h-96">
-      <table class="table-auto w-full text-left border-collapse whitespace-nowrap">
-        <thead class="sticky top-0">
-          <tr class="bg-gray-200">
-            <th class="px-2 py-2 sm:px-4 sm:py-2">รหัสสถานี</th>
-            <th class="px-2 py-2 sm:px-4 sm:py-2">ชื่อสถานี</th>
-            <th class="px-2 py-2 sm:px-4 sm:py-2">ที่อยู่</th>
-            <th class="px-2 py-2 sm:px-4 sm:py-2">ระยะเวลา</th>
-            <th class="px-2 py-2 sm:px-4 sm:py-2">สถานะการใช้งาน</th>
-            <th class="px-2 py-2 sm:px-4 sm:py-2">จัดการสถานีรถไฟ</th>
+      <table class="w-full text-left border-collapse table-auto whitespace-nowrap">
+        <thead class="sticky top-0 bg-gray-200">
+          <tr>
+            <th class="px-4 py-2">รหัสสถานี</th>
+            <th class="px-4 py-2">ชื่อสถานี</th>
+            <th class="px-4 py-2">ที่อยู่</th>
+            <th class="px-4 py-2">ระยะเวลา</th>
+            <th class="px-4 py-2">สถานะการใช้งาน</th>
+            <th class="px-4 py-2">จัดการสถานีรถไฟ</th>
           </tr>
         </thead>
         <tbody>
           {#each stations as station}
             <tr class="even:bg-gray-100">
-              <td class="border px-2 py-2 sm:px-4 sm:py-2">{station.station_id}</td>
-              <td class="border px-2 py-2 sm:px-4 sm:py-2">
+              <td class="border px-4 py-2">
+                {#if editingStationId === station.station_id}
+                  <input type="text" bind:value={station.station_id} class="w-full border p-1" />
+                {:else}
+                  {station.station_id}
+                {/if}
+              </td>
+              <td class="border px-4 py-2">
                 {#if editingStationId === station.station_id}
                   <input type="text" bind:value={station.station_name} class="w-full border p-1" />
                 {:else}
                   {station.station_name}
                 {/if}
               </td>
-              <td class="border px-2 py-2 sm:px-4 sm:py-2">
+              <td class="border px-4 py-2">
                 {#if editingStationId === station.station_id}
                   <input type="text" bind:value={station.station_address} class="w-full border p-1" />
                 {:else}
                   {station.station_address}
                 {/if}
               </td>
-              <td class="border px-2 py-2 sm:px-4 sm:py-2">
+              <td class="border px-4 py-2">
                 {#if editingStationId === station.station_id}
                   <input type="datetime-local" bind:value={station.time_use} class="w-full border p-1" />
                 {:else}
                   {station.time_use}
                 {/if}
               </td>
-              <td class="border px-2 py-2 sm:px-4 sm:py-2">
-                  {#if editingStationId === station.station_id}
+              <td class="border px-4 py-2">
+                {#if editingStationId === station.station_id}
                   <input type="text" bind:value={station.station_status} class="w-full border p-1" />
                 {:else}
                   {station.station_status}
                 {/if}
               </td>
-              <td class="border px-2 py-2 sm:px-4 sm:py-2 flex flex-col sm:flex-row justify-center items-center">
+              <td class="border px-4 py-2 flex flex-col sm:flex-row justify-center items-center">
                 {#if editingStationId === station.station_id}
-                  <button 
-                    on:click={() => saveStation(station.station_id)} 
-                    class="bg-green-500 text-white w-full sm:w-32 px-2 py-2 sm:px-4 sm:py-2 rounded mb-2 sm:mb-0 sm:mr-2">
+                  <button
+                    on:click={() => saveStation(station.station_id)}
+                    class="w-full sm:w-32 bg-green-500 text-white rounded px-4 py-2 mb-2 sm:mr-2">
                     บันทึก
                   </button>
                 {:else}
-                  <button 
-                    on:click={() => editStation(station.station_id)} 
-                    class="bg-[#102C57] text-white w-full sm:w-32 px-2 py-2 sm:px-4 sm:py-2 rounded mb-2 sm:mb-0 sm:mr-2">
+                  <button
+                    on:click={() => editStation(station.station_id)}
+                    class="w-full sm:w-32 bg-[#102C57] text-white rounded px-4 py-2 mb-2 sm:mr-2">
                     แก้ไข
                   </button>
                 {/if}
-                <button 
-                  on:click={() => deleteStation(station.station_id)} 
-                  class="bg-red-500 text-white w-full sm:w-32 px-2 py-2 sm:px-4 sm:py-2 rounded">
+                <button
+                  on:click={() => deleteStation(station.station_id)}
+                  class="w-full sm:w-32 bg-red-500 text-white rounded px-4 py-2">
                   ลบสถานีรถไฟ
                 </button>
               </td>
-              
             </tr>
           {/each}
         </tbody>
       </table>
     </section>
 
-    <!-- Add Trip Button -->
-    <div class="flex justify-center items-center">
-      <a href="/addstations" class="btn bg-[#102C57] text-white text-center w-1/2 mt-10 sm:w-1/6 px-2 py-2 sm:px-4 sm:py-2 rounded">เพิ่มสถานีรถไฟ</a>
+    <!-- Add Station Button -->
+    <div class="flex justify-center mt-10">
+      <a
+        href="/staff/addstations"
+        class="w-1/2 sm:w-1/6 text-center bg-[#102C57] text-white rounded px-4 py-2">
+        เพิ่มสถานีรถไฟ
+      </a>
     </div>
   </div>
 </div>

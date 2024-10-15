@@ -6,19 +6,31 @@ import path from 'path';
 import Database from 'better-sqlite3'; // ตรวจสอบการติดตั้งไลบรารี
 
 export const load = async ({ cookies, url }) => {
-  const userId = cookies.get(SESSION_COOKIE_NAME);
+  const sessionCookie = cookies.get(SESSION_COOKIE_NAME);
+
+  let userSession;
+
+  try {
+    // แปลง cookie จาก JSON กลับเป็น Object
+    userSession = sessionCookie ? JSON.parse(sessionCookie) : null;
+  } catch (error) {
+    console.error('Failed to parse session cookie:', error);
+    userSession = null;
+  }
 
   // ตรวจสอบการล็อกอิน
-  if (!userId) {
+  if (!userSession || !userSession.id) {
     throw redirect(
       route('/auth/login'),
       {
         type: 'error',
-        message: 'กรุณาเข้าสู่ระบบเพื่อดูหน้านี้'
+        message: 'กรุณาเข้าสู่ระบบเพื่อดูหน้านี้',
       },
       cookies
     );
   }
+
+  const passengerId = userSession.id; // ดึง passenger_id จาก session
 
   const dbPath = path.resolve('src/lib/databaseStorage/dbforTrain-2.db');
   let db;
@@ -52,12 +64,12 @@ export const load = async ({ cookies, url }) => {
         JOIN SEAT_TYPE st ON s.seat_type = st.seat_type
         WHERE r.passenger_id = ?
       `)
-      .all(userId);
+      .all(passengerId); // ใช้ passengerId ในการ query
 
     console.log('result form query', reservations);
 
     // ดึงชื่อผู้ใช้ที่ล็อกอินอยู่
-    loggedOnUserName = await getUserName(userId);
+    loggedOnUserName = await getUserName(passengerId);
 
   } catch (error) {
     console.error('Database query failed:', error);
@@ -67,7 +79,7 @@ export const load = async ({ cookies, url }) => {
   }
 
   return {
-    session: userId,
+    session: userSession,
     reservations,
     loggedOnUserName,
   };

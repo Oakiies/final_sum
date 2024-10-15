@@ -35,19 +35,22 @@ export const actions = {
     const dbPath = path.resolve('src/lib/databaseStorage/dbforTrain-2.db');
     const db = new Database(dbPath);
     const formData = await request.formData();
-    const stationId = formData.get('station_id');
-    const name = formData.get('station_name');
-    const time = formData.get('time_use');
-    const status = formData.get('station_status');
+    const stationId = formData.get('stationId');
+    const name = formData.get('name');
+    const address = formData.get('address');
+    const time = formData.get('time');
+    const status = formData.get('status');
 
     try {
       db.prepare(`
         UPDATE STATIONS
         SET station_id = ?,
             station_name = ?,
+            station_address = ?,
             time_use = ?,
             station_status = ?
-      `).run(stationId, name, time, status);
+        WHERE station_id = ?
+      `).run(stationId ,name, address, time, status, stationId);
 
       return { success: true };
     } catch (error) {
@@ -87,37 +90,6 @@ export const actions = {
     } catch (error) {
       console.error('Error deleting station:', error);
       return { error: 'Unable to delete station' };
-    } finally {
-      db.close();
-    }
-  },
-  
-  addTrip: async ({ request }) => {
-    const dbPath = path.resolve('src/lib/databaseStorage/dbforTrain-2.db');
-    const db = new Database(dbPath);
-    const formData = await request.formData();
-    const tripId = formData.get('tripId');
-    const start = formData.get('start');
-    const end = formData.get('end');
-    const fromDatetime = formData.get('fromDatetime');
-    const arrivalTime = formData.get('arrivalTime');
-    const classType = formData.get('class');
-    const seats = formData.get('seats');
-    const staff_id = formData.get('staff_id');
-
-    try {
-      db.prepare(`
-        INSERT INTO TRIPS (trip_id, start_station_id, end_station_id, from_datetime)
-        VALUES (?, 
-        (SELECT station_id FROM STATIONS WHERE station_name = ?), 
-        (SELECT station_id FROM STATIONS WHERE station_name = ?), 
-        ?)
-      `).run(tripId, start, end, fromDatetime);
-
-      return { success: true };
-    } catch (error) {
-      console.error('Error adding new trip:', error);
-      return { error: 'Unable to add new trip' };
     } finally {
       db.close();
     }

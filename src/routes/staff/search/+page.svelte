@@ -136,7 +136,94 @@
     }
   }
 
+// Tor
 
+  import { goto } from '$app/navigation';
+
+    let tripsQ = []; // Initially empty, will be filled after querying
+    let tripssearch = data.trips;
+    let selectedTrip = null; // Selected trip
+    let selectedSeatType = ""; // Selected seat type
+    let amount = "";
+    let showSeats = false; // Control whether the seat selection is shown
+    console.log(tripssearch)
+    let totalPrice = 0;
+    let price = 0; // Selected seat ID
+    let firstName = '';
+    let lastName = '';
+    let citizenID = '';
+    let phoneNumber = '';
+    let fromStation = '';
+    let toStation = '';
+    let travelDate = '';
+
+    async function handleTripSelection(trip) {
+    selectedTrip = trip;
+
+    console.log("Selected Trip:", selectedTrip); // Log selected trip details
+
+    // Store trip_id and details in sessionStorage
+    sessionStorage.setItem('selectedTrip', JSON.stringify({
+        tripId: selectedTrip.trip_id,
+        start: selectedTrip.start,
+        end: selectedTrip.end,
+        price: selectedTrip.price,
+        from_datetime: selectedTrip.from_datetime,
+        arrivalTime: selectedTrip.arrivalTime
+    }));
+
+    // Send the trip ID to the backend to fetch seat details
+    try {
+        const response = await fetch("/search/api", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+            },
+            body: JSON.stringify({ tripId: selectedTrip.trip_id }),
+        });
+
+        const result = await response.json();
+        if (result.success) {
+            tripsQ = result.tripsQ; // Store the queried seat information in tripsQ
+            console.log("TripsQ after fetch:", tripsQ); // Log tripsQ to check if it is filled correctly
+
+            // Redirect to the booking page with trip details
+            goto('/reservation');
+        } else {
+            console.error("Failed to fetch trip details from the backend.");
+        }
+    } catch (error) {
+        console.error("Error while fetching trip details:", error);
+    }
+}
+
+
+
+    // Confirm selection and store the passenger details in sessionStorage
+    function confirmSelection() {
+        if (selectedTrip && selectedSeatType && firstName && lastName && citizenID && phoneNumber) {
+            totalPrice = (price || 0) * parseInt(amount);
+            console.log("Total Price:", selectedTrip.price, amount,totalPrice); // Log total price
+            // Store selected passenger and seat details in sessionStorage
+            sessionStorage.setItem('passengerDetails', JSON.stringify({
+                firstName: firstName,
+                lastName: lastName,
+                citizenID: citizenID,
+                phoneNumber: phoneNumber,
+                seatType: selectedSeatType,
+                amount: amount,
+                totalPrice: totalPrice,
+                fromStation: fromStation,
+                toStation: toStation,
+                travelDate: travelDate,
+            }));
+            console.log(totalPrice)
+            // Redirect to /sell/info
+            goto('/sell/info');
+        } else {
+            alert("Please fill in all required fields.");
+        }
+    }
 </script>
 
 <main class="container mx-auto px-16 ">
@@ -276,4 +363,56 @@
       คุณเลือก: {originStationName} ถึง {destinationStationName} บนสาย {selectedLine.toUpperCase()} วันที่ {selectedDate}
     </p>
   {/if}
+
+  
+<!-- Trip details -->
+<div class="border-t mb-6"></div>
+<div class="overflow-auto max-h-96">
+    {#each tripssearch as trip}
+    <div class="bg-gray-300 p-4 rounded mb-4 flex flex-col sm:flex-row justify-between items-start sm:items-center w-full">
+        <div>
+            <p class="font-bold">จาก {trip.start} - {trip.end} {trip.from_datetime}</p>
+            <p>เที่ยวโดยสาร {trip.trip_id} {trip.start} - {trip.end} </p>
+            <p>ออกเดินทาง {trip.from_datetime} ถึง {formatDateTime(
+              calculateTravelTime(
+                stations,
+                trip.start, 
+                trip.end, 
+                trip.from_datetime
+              )
+            )}</p>
+        </div>
+        <!-- Buttons for trip selection and showing seat options -->
+        <div class="flex space-x-2 mt-2 sm:mt-0">
+            <!-- Select Trip button -->
+            <form method="POST" action="?/saveTrip">
+              <!-- สร้าง bookingInfo สำหรับแต่ละทริป -->
+              <input type="hidden" name="bookingInfo" value={JSON.stringify({
+                tripId: trip.trip_id,
+                tripName: `${trip.trip_id} ${trip.start} - ${trip.end}`,
+                startName: trip.start,
+                endName: trip.end,
+                fromDatetime: trip.from_datetime,
+                toDatetime: calculateTravelTime(
+                stations,
+                trip.start, 
+                trip.end, 
+                trip.from_datetime
+              ),
+                availableClasses: trip.available_classes,
+                user_from_station: trip.start,
+                user_to_station: trip.end
+              })}>
+              <button
+              type="submit"
+              class="mt-6 bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-lg">
+              จอง
+            </button>
+            </form>
+          </div>
+        </div>
+    
+    {/each}
+</div>
+
 </main>

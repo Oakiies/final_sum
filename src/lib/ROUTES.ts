@@ -12,6 +12,7 @@ const PAGES = {
   "/": `/`,
   "/auth/login": `/auth/login`,
   "/auth/register": `/auth/register`,
+  "/auth/สำรอง": `/auth/สำรอง`,
   "/customer/list_ticket": `/customer/list_ticket`,
   "/customer/payment": `/customer/payment`,
   "/customer/reservation": `/customer/reservation`,
@@ -22,6 +23,9 @@ const PAGES = {
   "/dashboard": `/dashboard`,
   "/staff/addstations": `/staff/addstations`,
   "/staff/addtrips": `/staff/addtrips`,
+  "/staff/check": `/staff/check`,
+  "/staff/check/check2": `/staff/check/check2`,
+  "/staff/check/check2/confirm_ticket": `/staff/check/check2/confirm_ticket`,
   "/staff/manage": `/staff/manage`,
   "/staff/payment": `/staff/payment`,
   "/staff/reservation": `/staff/reservation`,
@@ -44,8 +48,8 @@ const ACTIONS = {
   "default /auth/login": `/auth/login`,
   "deleteAllUsers /auth/register": `/auth/register?/deleteAllUsers`,
   "registerUser /auth/register": `/auth/register?/registerUser`,
+  "default /auth/สำรอง": `/auth/สำรอง`,
   "simulatePayment /customer/payment": `/customer/payment?/simulatePayment`,
-  "default /dashboard": `/dashboard`,
   "default /logout": `/logout`,
   "simulatePayment /staff/payment": `/staff/payment?/simulatePayment`
 }
@@ -154,9 +158,9 @@ export function route<T extends keyof AllTypes>(key: T, ...params: any[]): strin
 * ```
 */
 export type KIT_ROUTES = {
-  PAGES: { '/': never, '/auth/login': never, '/auth/register': never, '/customer/list_ticket': never, '/customer/payment': never, '/customer/reservation': never, '/customer/reservation_change': never, '/customer/search': never, '/customer/search_change': never, '/customer/ticket': never, '/dashboard': never, '/staff/addstations': never, '/staff/addtrips': never, '/staff/manage': never, '/staff/payment': never, '/staff/reservation': never, '/staff/search': never, '/staff/ticket': never, '/test': never }
+  PAGES: { '/': never, '/auth/login': never, '/auth/register': never, '/auth/สำรอง': never, '/customer/list_ticket': never, '/customer/payment': never, '/customer/reservation': never, '/customer/reservation_change': never, '/customer/search': never, '/customer/search_change': never, '/customer/ticket': never, '/dashboard': never, '/staff/addstations': never, '/staff/addtrips': never, '/staff/check': never, '/staff/check/check2': never, '/staff/check/check2/confirm_ticket': never, '/staff/manage': never, '/staff/payment': never, '/staff/reservation': never, '/staff/search': never, '/staff/ticket': never, '/test': never }
   SERVERS: Record<string, never>
-  ACTIONS: { 'default /auth/login': never, 'deleteAllUsers /auth/register': never, 'registerUser /auth/register': never, 'simulatePayment /customer/payment': never, 'default /dashboard': never, 'default /logout': never, 'simulatePayment /staff/payment': never }
+  ACTIONS: { 'default /auth/login': never, 'deleteAllUsers /auth/register': never, 'registerUser /auth/register': never, 'default /auth/สำรอง': never, 'simulatePayment /customer/payment': never, 'default /logout': never, 'simulatePayment /staff/payment': never }
   LINKS: Record<string, never>
   Params: Record<string, never>
 }

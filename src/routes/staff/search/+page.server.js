@@ -13,6 +13,7 @@ export async function load() {
     // Query ข้อมูลทริป
     const trips = db.prepare(`
       SELECT
+      
         t.trip_id,
         t.staff_id,
         t.start_station_id,

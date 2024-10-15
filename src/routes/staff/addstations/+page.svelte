@@ -19,7 +19,7 @@
     formData.append('station_status', newStation.station_status);
 
     try {
-      const response = await fetch('/addstations/?/addStation', {
+      const response = await fetch('/staff/addstations/?/addStation', {
         method: 'POST',
         body: formData
       });

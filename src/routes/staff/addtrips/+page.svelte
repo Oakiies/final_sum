@@ -59,7 +59,7 @@
     formData.append('emId', newTrip.emId);
 
     try {
-      const response = await fetch('/addtrips/?/addTrip', {
+      const response = await fetch('/staff/addtrips/?/addTrip', {
         method: 'POST',
         body: formData,
       });
