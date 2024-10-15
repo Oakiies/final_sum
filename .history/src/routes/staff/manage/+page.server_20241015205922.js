@@ -1,6 +1,5 @@
 import Database from 'better-sqlite3';
 import path from 'path';
-import { count_seat } from '$lib/utils_reserve.js';
 
 export const actions = {
   updateTrip: async ({ request }) => {
@@ -40,6 +39,7 @@ export const actions = {
 
     try {
       const { query, params } = count_seat(tripId);
+
       console.log(`Executing Query: ${query} with Params: ${params}`);
 
       // Execute the query

@@ -176,6 +176,7 @@ for (let i = 0; i < trips.length; i++) {
           });
 
           const result = await response.json();
+
           // Log the result for debugging
           console.log('Result from server:', result);
           if (result.type == 'success') {

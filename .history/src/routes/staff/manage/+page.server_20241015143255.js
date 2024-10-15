@@ -1,6 +1,5 @@
 import Database from 'better-sqlite3';
 import path from 'path';
-import { count_seat } from '$lib/utils_reserve.js';
 
 export const actions = {
   updateTrip: async ({ request }) => {
@@ -27,30 +26,6 @@ export const actions = {
     } catch (error) {
       console.error('Error updating trip:', error);
       return { error: 'Unable to update trip' };
-    } finally {
-      db.close();
-    }
-  },
-
-  countAvailableSeats: async ({ request }) => {
-    const dbPath = path.resolve('src/lib/databaseStorage/dbforTrain-2.db');
-    const db = new Database(dbPath);
-    const formData = await request.formData();
-    const tripId = formData.get('tripId');
-
-    try {
-      const { query, params } = count_seat(tripId);
-      console.log(`Executing Query: ${query} with Params: ${params}`);
-
-      // Execute the query
-      const result = db.prepare(query).all(...params);
-
-      console.log('Available Seats:', result);
-
-      return { success: true, availableSeats: result };
-    } catch (error) {
-      console.error('Error counting available seats:', error);
-      return { error: 'Unable to count available seats' };
     } finally {
       db.close();
     }

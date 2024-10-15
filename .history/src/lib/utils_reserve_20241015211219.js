@@ -24,7 +24,7 @@ export function get_personinfo(userID) {
         console.log(`Trip ID: ${tripID}`);
     return { query: sqlQuery, params: [tripID] };
   }
-
+  
   export function getFareInfo(tripID) {
     const sqlQuery = `
       SELECT st.seat_type, 

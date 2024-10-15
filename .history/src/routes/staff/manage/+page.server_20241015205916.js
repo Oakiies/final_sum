@@ -1,6 +1,5 @@
 import Database from 'better-sqlite3';
 import path from 'path';
-import { count_seat } from '$lib/utils_reserve.js';
 
 export const actions = {
   updateTrip: async ({ request }) => {
@@ -31,7 +30,7 @@ export const actions = {
       db.close();
     }
   },
-
+  
   countAvailableSeats: async ({ request }) => {
     const dbPath = path.resolve('src/lib/databaseStorage/dbforTrain-2.db');
     const db = new Database(dbPath);
@@ -39,7 +38,9 @@ export const actions = {
     const tripId = formData.get('tripId');
 
     try {
+      // Get the SQL query and parameters from count_seat function
       const { query, params } = count_seat(tripId);
+
       console.log(`Executing Query: ${query} with Params: ${params}`);
 
       // Execute the query

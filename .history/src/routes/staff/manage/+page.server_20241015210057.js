@@ -1,6 +1,7 @@
 import Database from 'better-sqlite3';
 import path from 'path';
 import { count_seat } from '$lib/utils_reserve.js';
+$: ({ tripData, userInfo, availableSeats, travelTimeMinutes } = data || {});
 
 export const actions = {
   updateTrip: async ({ request }) => {

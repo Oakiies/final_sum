@@ -7,7 +7,7 @@ export function get_personinfo(userID) {
     console.log(`SQL Query: ${sqlQuery}`);
     return { query: sqlQuery, params: [userID] };
   }
-
+  
   export function count_seat(tripID) {
     const sqlQuery = `
         SELECT trip_id, seat_type, COUNT(seat_id) as available_seats
@@ -23,8 +23,8 @@ export function get_personinfo(userID) {
         console.log(`SQL Query: ${sqlQuery}`);
         console.log(`Trip ID: ${tripID}`);
     return { query: sqlQuery, params: [tripID] };
-  }
-
+}
+  
   export function getFareInfo(tripID) {
     const sqlQuery = `
       SELECT st.seat_type, 
